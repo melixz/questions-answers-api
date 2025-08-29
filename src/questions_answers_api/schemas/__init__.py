@@ -1,10 +1,12 @@
+from .answer import AnswerCreate, AnswerUpdate, AnswerResponse
 from .question import (
     QuestionCreate,
     QuestionUpdate,
     QuestionResponse,
     QuestionWithAnswers,
 )
-from .answer import AnswerCreate, AnswerUpdate, AnswerResponse
+
+QuestionWithAnswers.model_rebuild()
 
 __all__ = [
     "QuestionCreate",
