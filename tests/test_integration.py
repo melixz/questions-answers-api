@@ -6,7 +6,7 @@ class TestAPIIntegration:
     """Интеграционные тесты для проверки взаимодействия между компонентами."""
 
     def test_complete_qa_workflow(self, client: TestClient):
-        """Тест полного рабочего процесса: создание вопроса -> добавление ответов -> получение -> обновление -> удаление."""
+        """Тест полного рабочего процесса: создание вопроса -> добавление ответов -> получение -> удаление."""
 
         question_data = {"text": "Как работает FastAPI?"}
         question_response = client.post("/questions/", json=question_data)
@@ -41,21 +41,6 @@ class TestAPIIntegration:
         assert get_question_response.status_code == 200
         question_with_answers = get_question_response.json()
         assert len(question_with_answers["answers"]) == len(answers_data)
-
-        updated_question_text = "Как работает FastAPI и почему он популярен?"
-        update_question_response = client.put(
-            f"/questions/{question_id}", json={"text": updated_question_text}
-        )
-        assert update_question_response.status_code == 200
-        assert update_question_response.json()["text"] == updated_question_text
-
-        first_answer_id = created_answers[0]["id"]
-        updated_answer_text = "FastAPI - это высокопроизводительный веб-фреймворк для Python с автоматической валидацией"
-        update_answer_response = client.put(
-            f"/answers/{first_answer_id}", json={"text": updated_answer_text}
-        )
-        assert update_answer_response.status_code == 200
-        assert update_answer_response.json()["text"] == updated_answer_text
 
         second_answer_id = created_answers[1]["id"]
         delete_answer_response = client.delete(f"/answers/{second_answer_id}")

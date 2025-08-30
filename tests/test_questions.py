@@ -95,37 +95,6 @@ class TestQuestionRetrieval:
         assert len(data["answers"]) == len(question_with_answers["answers"])
 
 
-class TestQuestionUpdate:
-    """Тесты обновления вопросов."""
-
-    def test_update_question_success(self, client: TestClient, created_question):
-        """Тест успешного обновления вопроса."""
-        question_id = created_question["id"]
-        new_text = "Обновленный текст вопроса"
-
-        response = client.put(f"/questions/{question_id}", json={"text": new_text})
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["text"] == new_text
-        assert data["id"] == question_id
-
-    @pytest.mark.parametrize("invalid_text", ["", "   ", "\t\n"])
-    def test_update_question_invalid_text(
-        self, client: TestClient, created_question, invalid_text
-    ):
-        """Тест обновления вопроса с невалидным текстом."""
-        question_id = created_question["id"]
-
-        response = client.put(f"/questions/{question_id}", json={"text": invalid_text})
-        assert response.status_code == 422
-
-    def test_update_nonexistent_question(self, client: TestClient):
-        """Тест обновления несуществующего вопроса."""
-        response = client.put("/questions/999", json={"text": "Новый текст"})
-        assert response.status_code == 404
-
-
 class TestQuestionDeletion:
     """Тесты удаления вопросов."""
 

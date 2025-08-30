@@ -118,53 +118,6 @@ class TestAnswerRetrieval:
         assert returned_answer_ids == expected_answer_ids
 
 
-class TestAnswerUpdate:
-    """Тесты обновления ответов."""
-
-    def test_update_answer_success(self, client: TestClient, created_answer):
-        """Тест успешного обновления ответа."""
-        answer_id = created_answer["id"]
-        new_text = "Обновленный текст ответа"
-
-        response = client.put(f"/answers/{answer_id}", json={"text": new_text})
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["text"] == new_text
-        assert data["id"] == answer_id
-        assert (
-            data["user_id"] == created_answer["user_id"]
-        )  # user_id не должен измениться
-
-    @pytest.mark.parametrize("invalid_text", ["", "   ", "\t\n"])
-    def test_update_answer_invalid_text(
-        self, client: TestClient, created_answer, invalid_text
-    ):
-        """Тест обновления ответа с невалидным текстом."""
-        answer_id = created_answer["id"]
-
-        response = client.put(f"/answers/{answer_id}", json={"text": invalid_text})
-        assert response.status_code == 422
-
-    def test_update_nonexistent_answer(self, client: TestClient):
-        """Тест обновления несуществующего ответа."""
-        response = client.put("/answers/999", json={"text": "Новый текст"})
-        assert response.status_code == 404
-
-    def test_update_answer_partial(self, client: TestClient, created_answer):
-        """Тест частичного обновления ответа (только текст)."""
-        answer_id = created_answer["id"]
-        original_user_id = created_answer["user_id"]
-        new_text = "Частично обновленный текст"
-
-        response = client.put(f"/answers/{answer_id}", json={"text": new_text})
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["text"] == new_text
-        assert data["user_id"] == original_user_id  # user_id остается прежним
-
-
 class TestAnswerDeletion:
     """Тесты удаления ответов."""
 
@@ -242,11 +195,7 @@ class TestAnswerIntegration:
         get_response = client.get(f"/answers/{answer_id}")
         assert get_response.status_code == 200
 
-        new_text = "Обновленный текст в жизненном цикле"
-        update_response = client.put(f"/answers/{answer_id}", json={"text": new_text})
-        assert update_response.status_code == 200
-        assert update_response.json()["text"] == new_text
-
+        # Удаляем ответ
         delete_response = client.delete(f"/answers/{answer_id}")
         assert delete_response.status_code == 204
 

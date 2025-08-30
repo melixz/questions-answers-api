@@ -1,24 +1,28 @@
 from datetime import datetime
-from typing import List, Optional
-from pydantic import BaseModel, Field
+from typing import TYPE_CHECKING
+from pydantic import BaseModel, Field, field_validator
+
+if TYPE_CHECKING:
+    from .answer import AnswerResponse
 
 
 class QuestionBase(BaseModel):
     """Базовая схема вопроса."""
 
-    text: str = Field(..., min_length=1, description="Текст вопроса")
+    text: str = Field(..., description="Текст вопроса")
+
+    @field_validator("text")
+    @classmethod
+    def validate_text(cls, v: str) -> str:
+        if not v or not v.strip():
+            raise ValueError("Текст вопроса не может быть пустым")
+        return v.strip()
 
 
 class QuestionCreate(QuestionBase):
     """Схема для создания вопроса."""
 
     pass
-
-
-class QuestionUpdate(BaseModel):
-    """Схема для обновления вопроса."""
-
-    text: Optional[str] = Field(None, min_length=1, description="Новый текст вопроса")
 
 
 class QuestionResponse(QuestionBase):
@@ -34,9 +38,7 @@ class QuestionResponse(QuestionBase):
 class QuestionWithAnswers(QuestionResponse):
     """Схема вопроса с ответами."""
 
-    from .answer import AnswerResponse
-
-    answers: List[AnswerResponse] = []
+    answers: list["AnswerResponse"] = []
 
     class Config:
         from_attributes = True

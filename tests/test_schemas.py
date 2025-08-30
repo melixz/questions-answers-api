@@ -3,11 +3,9 @@ from datetime import datetime
 from pydantic import ValidationError
 from src.questions_answers_api.schemas import (
     QuestionCreate,
-    QuestionUpdate,
     QuestionResponse,
     QuestionWithAnswers,
     AnswerCreate,
-    AnswerUpdate,
     AnswerResponse,
 )
 
@@ -44,21 +42,6 @@ class TestQuestionSchemas:
         schema = QuestionCreate(**data)
 
         assert schema.text == "Вопрос с пробелами"
-
-    def test_question_update_valid(self):
-        """Тест валидной схемы обновления вопроса."""
-        data = {"text": "Обновленный вопрос"}
-        schema = QuestionUpdate(**data)
-
-        assert schema.text == "Обновленный вопрос"
-
-    def test_question_update_optional_fields(self):
-        """Тест опциональных полей в схеме обновления."""
-        schema = QuestionUpdate()
-        assert schema.text is None
-
-        schema_with_text = QuestionUpdate(text="Новый текст")
-        assert schema_with_text.text == "Новый текст"
 
     def test_question_response_schema(self):
         """Тест схемы ответа для вопроса."""
@@ -147,21 +130,6 @@ class TestAnswerSchemas:
         assert schema.text == long_text
         assert len(schema.text) == 1000
 
-    def test_answer_update_valid(self):
-        """Тест валидной схемы обновления ответа."""
-        data = {"text": "Обновленный ответ"}
-        schema = AnswerUpdate(**data)
-
-        assert schema.text == "Обновленный ответ"
-
-    def test_answer_update_optional_fields(self):
-        """Тест опциональных полей в схеме обновления ответа."""
-        schema = AnswerUpdate()
-        assert schema.text is None
-
-        schema_with_text = AnswerUpdate(text="Новый текст ответа")
-        assert schema_with_text.text == "Новый текст ответа"
-
     def test_answer_response_schema(self):
         """Тест схемы ответа для ответа."""
         data = {
@@ -247,9 +215,7 @@ class TestSchemaValidation:
         "schema_class,valid_data",
         [
             (QuestionCreate, {"text": "Тест"}),
-            (QuestionUpdate, {"text": "Обновление"}),
             (AnswerCreate, {"user_id": "user", "text": "Ответ"}),
-            (AnswerUpdate, {"text": "Обновленный ответ"}),
         ],
     )
     def test_schema_serialization(self, schema_class, valid_data):

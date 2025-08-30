@@ -1,8 +1,6 @@
 from fastapi import FastAPI
-from .core.database import engine, Base
+from fastapi.responses import RedirectResponse
 from .api import questions_router, answers_router
-
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Questions & Answers API",
@@ -14,13 +12,18 @@ app.include_router(questions_router)
 app.include_router(answers_router)
 
 
-@app.get("/")
+@app.get("/", include_in_schema=False)
 async def root():
-    """Корневой эндпоинт."""
-    return {"message": "Questions & Answers API"}
+    """Редирект на документацию API."""
+    return RedirectResponse(url="/docs")
 
 
-@app.get("/health")
+@app.get(
+    "/health",
+    summary="Проверка здоровья сервиса",
+    description="Эндпоинт для проверки работоспособности API сервиса",
+    tags=["System"],
+)
 async def health_check():
     """Проверка состояния сервиса."""
-    return {"status": "healthy"}
+    return {"status": "healthy", "message": "API работает нормально"}

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 from sqlalchemy.orm import Session
 from ..models import Answer
 
@@ -14,7 +14,7 @@ class AnswerRepository:
         """Получить ответ по ID."""
         return self.db.query(Answer).filter(Answer.id == answer_id).first()
 
-    def get_by_question_id(self, question_id: int) -> List[Answer]:
+    def get_by_question_id(self, question_id: int) -> list[Answer]:
         """Получить все ответы для вопроса."""
         return self.db.query(Answer).filter(Answer.question_id == question_id).all()
 
@@ -22,13 +22,6 @@ class AnswerRepository:
         """Создать новый ответ."""
         answer = Answer(question_id=question_id, user_id=user_id, text=text)
         self.db.add(answer)
-        self.db.commit()
-        self.db.refresh(answer)
-        return answer
-
-    def update(self, answer: Answer, text: str) -> Answer:
-        """Обновить ответ."""
-        answer.text = text
         self.db.commit()
         self.db.refresh(answer)
         return answer

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 from sqlalchemy.orm import Session
 from ..models import Question
 
@@ -10,7 +10,7 @@ class QuestionRepository:
         """Инициализация репозитория."""
         self.db = db
 
-    def get_all(self) -> List[Question]:
+    def get_all(self) -> list[Question]:
         """Получить все вопросы."""
         return self.db.query(Question).all()
 
@@ -22,13 +22,6 @@ class QuestionRepository:
         """Создать новый вопрос."""
         question = Question(text=text)
         self.db.add(question)
-        self.db.commit()
-        self.db.refresh(question)
-        return question
-
-    def update(self, question: Question, text: str) -> Question:
-        """Обновить вопрос."""
-        question.text = text
         self.db.commit()
         self.db.refresh(question)
         return question
